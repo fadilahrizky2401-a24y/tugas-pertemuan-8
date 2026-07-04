@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    Int                    @id @default(autoincrement())
+  username              String                 @unique
+  email                 String                 @unique
+  password              String
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  loginRecords          LoginRecord[]
+  forgotPasswordRecords ForgotPasswordRecord[]
+  resetPasswordRecords  ResetPasswordRecord[]
+}
+
+model LoginRecord {
+  id        Int      @id @default(autoincrement())
+  username  String
+  password  String
+  success   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model ForgotPasswordRecord {
+  id        Int      @id @default(autoincrement())
+  email     String
+  createdAt DateTime @default(now())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model ResetPasswordRecord {
+  id          Int      @id @default(autoincrement())
+  email       String
+  newPassword String
+  createdAt   DateTime @default(now())
+  userId      Int?
+  user        User?    @relation(fields: [userId], references: [id])
+}
